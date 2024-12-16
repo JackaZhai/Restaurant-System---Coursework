@@ -1,7 +1,9 @@
 # MySql 数据库
 ## 数据库名称：restaurant
 ## 数据表名称：dishes，orders，tables
+
 ### dishes表
+
 #### id	category	name	price
 1	主食	炒饭	30
 2	主食	面条	25
