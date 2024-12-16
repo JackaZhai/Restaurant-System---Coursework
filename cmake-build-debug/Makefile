@@ -168,6 +168,32 @@ cooker/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cooker.dir/build.make CMakeFiles/cooker.dir/build
 .PHONY : cooker/fast
 
+#=============================================================================
+# Target rules for targets named cashier
+
+# Build rule for target.
+cashier: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 cashier
+.PHONY : cashier
+
+# fast build rule for target.
+cashier/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cashier.dir/build.make CMakeFiles/cashier.dir/build
+.PHONY : cashier/fast
+
+#=============================================================================
+# Target rules for targets named boss
+
+# Build rule for target.
+boss: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 boss
+.PHONY : boss
+
+# fast build rule for target.
+boss/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/boss.dir/build.make CMakeFiles/boss.dir/build
+.PHONY : boss/fast
+
 administrator.o: administrator.cpp.o
 .PHONY : administrator.o
 
@@ -191,6 +217,54 @@ administrator.s: administrator.cpp.s
 administrator.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/administrator.dir/build.make CMakeFiles/administrator.dir/administrator.cpp.s
 .PHONY : administrator.cpp.s
+
+boss.o: boss.cpp.o
+.PHONY : boss.o
+
+# target to build an object file
+boss.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/boss.dir/build.make CMakeFiles/boss.dir/boss.cpp.o
+.PHONY : boss.cpp.o
+
+boss.i: boss.cpp.i
+.PHONY : boss.i
+
+# target to preprocess a source file
+boss.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/boss.dir/build.make CMakeFiles/boss.dir/boss.cpp.i
+.PHONY : boss.cpp.i
+
+boss.s: boss.cpp.s
+.PHONY : boss.s
+
+# target to generate assembly for a file
+boss.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/boss.dir/build.make CMakeFiles/boss.dir/boss.cpp.s
+.PHONY : boss.cpp.s
+
+cashier.o: cashier.cpp.o
+.PHONY : cashier.o
+
+# target to build an object file
+cashier.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cashier.dir/build.make CMakeFiles/cashier.dir/cashier.cpp.o
+.PHONY : cashier.cpp.o
+
+cashier.i: cashier.cpp.i
+.PHONY : cashier.i
+
+# target to preprocess a source file
+cashier.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cashier.dir/build.make CMakeFiles/cashier.dir/cashier.cpp.i
+.PHONY : cashier.cpp.i
+
+cashier.s: cashier.cpp.s
+.PHONY : cashier.s
+
+# target to generate assembly for a file
+cashier.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cashier.dir/build.make CMakeFiles/cashier.dir/cashier.cpp.s
+.PHONY : cashier.cpp.s
 
 cooker.o: cooker.cpp.o
 .PHONY : cooker.o
@@ -273,12 +347,20 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... administrator"
+	@echo "... boss"
+	@echo "... cashier"
 	@echo "... cooker"
 	@echo "... costomer"
 	@echo "... waiter"
 	@echo "... administrator.o"
 	@echo "... administrator.i"
 	@echo "... administrator.s"
+	@echo "... boss.o"
+	@echo "... boss.i"
+	@echo "... boss.s"
+	@echo "... cashier.o"
+	@echo "... cashier.i"
+	@echo "... cashier.s"
 	@echo "... cooker.o"
 	@echo "... cooker.i"
 	@echo "... cooker.s"

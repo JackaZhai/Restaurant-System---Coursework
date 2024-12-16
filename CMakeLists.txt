@@ -14,9 +14,12 @@ add_executable(costomer costomer.cpp)
 add_executable(waiter waiter.cpp)
 add_executable(administrator administrator.cpp)
 add_executable(cooker cooker.cpp)
-
+add_executable(cashier cashier.cpp)
 # 链接 MySQL 库
 target_link_libraries(costomer mysqlclient)
 target_link_libraries(waiter mysqlclient)
 target_link_libraries(administrator mysqlclient)
 target_link_libraries(cooker mysqlclient)
+add_executable(boss boss.cpp)
+target_link_libraries(boss mysqlclient)
+target_link_libraries(cashier mysqlclient)

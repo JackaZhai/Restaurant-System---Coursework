@@ -67,6 +67,8 @@ all: CMakeFiles/costomer.dir/all
 all: CMakeFiles/waiter.dir/all
 all: CMakeFiles/administrator.dir/all
 all: CMakeFiles/cooker.dir/all
+all: CMakeFiles/cashier.dir/all
+all: CMakeFiles/boss.dir/all
 .PHONY : all
 
 # The main recursive "preinstall" target.
@@ -78,6 +80,8 @@ clean: CMakeFiles/costomer.dir/clean
 clean: CMakeFiles/waiter.dir/clean
 clean: CMakeFiles/administrator.dir/clean
 clean: CMakeFiles/cooker.dir/clean
+clean: CMakeFiles/cashier.dir/clean
+clean: CMakeFiles/boss.dir/clean
 .PHONY : clean
 
 #=============================================================================
@@ -87,7 +91,7 @@ clean: CMakeFiles/cooker.dir/clean
 CMakeFiles/costomer.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/costomer.dir/build.make CMakeFiles/costomer.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/costomer.dir/build.make CMakeFiles/costomer.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/Zhai/CLionProjects/点餐系统/cmake-build-debug/CMakeFiles --progress-num=5,6 "Built target costomer"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/Zhai/CLionProjects/点餐系统/cmake-build-debug/CMakeFiles --progress-num=9,10 "Built target costomer"
 .PHONY : CMakeFiles/costomer.dir/all
 
 # Build rule for subdir invocation for target.
@@ -113,7 +117,7 @@ CMakeFiles/costomer.dir/clean:
 CMakeFiles/waiter.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/waiter.dir/build.make CMakeFiles/waiter.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/waiter.dir/build.make CMakeFiles/waiter.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/Zhai/CLionProjects/点餐系统/cmake-build-debug/CMakeFiles --progress-num=7,8 "Built target waiter"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/Zhai/CLionProjects/点餐系统/cmake-build-debug/CMakeFiles --progress-num=11,12 "Built target waiter"
 .PHONY : CMakeFiles/waiter.dir/all
 
 # Build rule for subdir invocation for target.
@@ -165,7 +169,7 @@ CMakeFiles/administrator.dir/clean:
 CMakeFiles/cooker.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cooker.dir/build.make CMakeFiles/cooker.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cooker.dir/build.make CMakeFiles/cooker.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/Zhai/CLionProjects/点餐系统/cmake-build-debug/CMakeFiles --progress-num=3,4 "Built target cooker"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/Zhai/CLionProjects/点餐系统/cmake-build-debug/CMakeFiles --progress-num=7,8 "Built target cooker"
 .PHONY : CMakeFiles/cooker.dir/all
 
 # Build rule for subdir invocation for target.
@@ -183,6 +187,58 @@ cooker: CMakeFiles/cooker.dir/rule
 CMakeFiles/cooker.dir/clean:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cooker.dir/build.make CMakeFiles/cooker.dir/clean
 .PHONY : CMakeFiles/cooker.dir/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/cashier.dir
+
+# All Build rule for target.
+CMakeFiles/cashier.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cashier.dir/build.make CMakeFiles/cashier.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cashier.dir/build.make CMakeFiles/cashier.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/Zhai/CLionProjects/点餐系统/cmake-build-debug/CMakeFiles --progress-num=5,6 "Built target cashier"
+.PHONY : CMakeFiles/cashier.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/cashier.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/Zhai/CLionProjects/点餐系统/cmake-build-debug/CMakeFiles 2
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/cashier.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/Zhai/CLionProjects/点餐系统/cmake-build-debug/CMakeFiles 0
+.PHONY : CMakeFiles/cashier.dir/rule
+
+# Convenience name for target.
+cashier: CMakeFiles/cashier.dir/rule
+.PHONY : cashier
+
+# clean rule for target.
+CMakeFiles/cashier.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cashier.dir/build.make CMakeFiles/cashier.dir/clean
+.PHONY : CMakeFiles/cashier.dir/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/boss.dir
+
+# All Build rule for target.
+CMakeFiles/boss.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/boss.dir/build.make CMakeFiles/boss.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/boss.dir/build.make CMakeFiles/boss.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/Users/Zhai/CLionProjects/点餐系统/cmake-build-debug/CMakeFiles --progress-num=3,4 "Built target boss"
+.PHONY : CMakeFiles/boss.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/boss.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/Zhai/CLionProjects/点餐系统/cmake-build-debug/CMakeFiles 2
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/boss.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/Zhai/CLionProjects/点餐系统/cmake-build-debug/CMakeFiles 0
+.PHONY : CMakeFiles/boss.dir/rule
+
+# Convenience name for target.
+boss: CMakeFiles/boss.dir/rule
+.PHONY : boss
+
+# clean rule for target.
+CMakeFiles/boss.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/boss.dir/build.make CMakeFiles/boss.dir/clean
+.PHONY : CMakeFiles/boss.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

@@ -1,5 +1,5 @@
-CMakeFiles/administrator.dir/administrator.cpp.o: \
-  /Users/Zhai/CLionProjects/点餐系统/administrator.cpp \
+CMakeFiles/boss.dir/boss.cpp.o: \
+  /Users/Zhai/CLionProjects/点餐系统/boss.cpp \
   /opt/homebrew/include/mysql/mysql.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/stdbool.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.2.sdk/usr/include/c++/v1/__config \
