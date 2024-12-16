@@ -5,6 +5,52 @@
 
 using namespace std;
 
+void connectToDatabase(MYSQL *&conn);// 连接到数据库
+void updateTableStatus(MYSQL *conn, int table_id, int status);// 更新桌号状态
+void settleBill(MYSQL *conn, int table_id);// 结算小票
+void dailyStatistics(MYSQL *conn);// 统计当天结算
+void dailyDishStatistics(MYSQL *conn);// 统计当天待做和已做菜品
+
+int main() {
+    MYSQL *conn;
+    connectToDatabase(conn);
+
+    char choice;
+    while (true) {
+        cout << "\n==================== 收银员端 ====================\n";
+        cout << "1. 结算小票\n";
+        cout << "2. 统计当天结算\n";
+        cout << "3. 统计当天待做和已做菜品\n";
+        cout << "0. 退出\n";
+        cout << "请选择操作: ";
+        cin >> choice;
+
+        switch (choice) {
+            case '1': {
+                int table_id;
+                cout << "请输入桌号ID: ";
+                cin >> table_id;
+                settleBill(conn, table_id);
+                break;
+            }
+            case '2':
+                dailyStatistics(conn);
+            break;
+            case '3':
+                dailyDishStatistics(conn);
+            break;
+            case '0':
+                mysql_close(conn);
+            return 0;
+            default:
+                cout << "无效的选择，请重试。\n";
+        }
+    }
+
+    mysql_close(conn);
+    return 0;
+}
+
 // 连接到数据库
 void connectToDatabase(MYSQL *&conn) {
     const char *server = "localhost";
@@ -16,6 +62,14 @@ void connectToDatabase(MYSQL *&conn) {
     if (!mysql_real_connect(conn, server, user, password, database, 0, NULL, 0)) {
         cerr << "MySQL 连接失败: " << mysql_error(conn) << endl;
         exit(1);
+    }
+}
+
+// 更新桌号状态
+void updateTableStatus(MYSQL *conn, int table_id, int status) {
+    string query = "UPDATE tables SET status = " + to_string(status) + " WHERE table_id = " + to_string(table_id);
+    if (mysql_query(conn, query.c_str())) {
+        cerr << "MySQL 查询失败: " << mysql_error(conn) << endl;
     }
 }
 
@@ -52,6 +106,9 @@ void settleBill(MYSQL *conn, int table_id) {
     cout << "===============================================\n";
 
     mysql_free_result(res);
+
+    // 更新桌号状态为0
+    updateTableStatus(conn, table_id, 0);
 }
 
 // 统计当天结算
@@ -108,44 +165,4 @@ void dailyDishStatistics(MYSQL *conn) {
     cout << "======================\n";
 
     mysql_free_result(res);
-}
-
-int main() {
-    MYSQL *conn;
-    connectToDatabase(conn);
-
-    char choice;
-    while (true) {
-        cout << "\n==================== 收银员端 ====================\n";
-        cout << "1. 结算小票\n";
-        cout << "2. 统计当天结算\n";
-        cout << "3. 统计当天待做和已做菜品\n";
-        cout << "0. 退出\n";
-        cout << "请选择操作: ";
-        cin >> choice;
-
-        switch (choice) {
-            case '1': {
-                int table_id;
-                cout << "请输入桌号ID: ";
-                cin >> table_id;
-                settleBill(conn, table_id);
-                break;
-            }
-            case '2':
-                dailyStatistics(conn);
-                break;
-            case '3':
-                dailyDishStatistics(conn);
-                break;
-            case '0':
-                mysql_close(conn);
-                return 0;
-            default:
-                cout << "无效的选择，请重试。\n";
-        }
-    }
-
-    mysql_close(conn);
-    return 0;
 }

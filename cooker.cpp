@@ -5,6 +5,53 @@
 
 using namespace std;
 
+void connectToDatabase(MYSQL *&conn);// 连接到数据库
+void displayPendingOrders(MYSQL *conn);// 显示所有待做订单
+void updateOrderStatus(MYSQL *conn, int order_id, int status);// 更新订单状态
+
+
+int main() {
+    MYSQL *conn;
+    connectToDatabase(conn);
+
+    int order_id;
+    char choice;
+    int status;
+
+    while (true) {
+        cout << "\n==================== 厨师端 ====================\n";
+        cout << "1. 查看待做订单\n";
+        cout << "2. 更新订单状态\n";
+        cout << "0. 退出\n";
+        cout << "请选择操作: ";
+        cin >> choice;
+
+        switch (choice) {
+            case '1':
+                displayPendingOrders(conn);
+            break;
+            case '2':
+                cout << "请输入订单ID: ";
+            cin >> order_id;
+            cout << "请输入新状态 (1-已做/2-已出餐): ";
+            cin >> status;
+            if (status == 1 || status == 2) {
+                updateOrderStatus(conn, order_id, status);
+            } else {
+                cout << "无效的状态，请重试。\n";
+            }
+            break;
+            case '0':
+                mysql_close(conn);
+            return 0;
+            default:
+                cout << "无效的选择，请重试。\n";
+        }
+    }
+
+    mysql_close(conn);
+    return 0;
+}
 // 连接到数据库
 void connectToDatabase(MYSQL *&conn) {
     const char *server = "localhost";
@@ -51,45 +98,3 @@ void updateOrderStatus(MYSQL *conn, int order_id, int status) {
     }
 }
 
-int main() {
-    MYSQL *conn;
-    connectToDatabase(conn);
-
-    int order_id;
-    char choice;
-    int status;
-
-    while (true) {
-        cout << "\n==================== 厨师端 ====================\n";
-        cout << "1. 查看待做订单\n";
-        cout << "2. 更新订单状态\n";
-        cout << "0. 退出\n";
-        cout << "请选择操作: ";
-        cin >> choice;
-
-        switch (choice) {
-            case '1':
-                displayPendingOrders(conn);
-                break;
-            case '2':
-                cout << "请输入订单ID: ";
-                cin >> order_id;
-                cout << "请输入新状态 (1-已做/2-已出餐): ";
-                cin >> status;
-                if (status == 1 || status == 2) {
-                    updateOrderStatus(conn, order_id, status);
-                } else {
-                    cout << "无效的状态，请重试。\n";
-                }
-                break;
-            case '0':
-                mysql_close(conn);
-                return 0;
-            default:
-                cout << "无效的选择，请重试。\n";
-        }
-    }
-
-    mysql_close(conn);
-    return 0;
-}

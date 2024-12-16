@@ -5,6 +5,43 @@
 
 using namespace std;
 
+void connectToDatabase(MYSQL *&conn);// 连接到数据库
+void displayAllOrders(MYSQL *conn);// 显示所有订单
+void dailyStatistics(MYSQL *conn);// 统计当天结算
+
+int main() {
+    MYSQL *conn;
+    connectToDatabase(conn);
+
+    char choice;
+
+    while (true) {
+        cout << "\n==================== 餐厅老板端 ====================\n";
+        cout << "1. 查看所有订单\n";
+        cout << "2. 统计查询\n";
+        cout << "0. 退出\n";
+        cout << "请选择操作: ";
+        cin >> choice;
+
+        switch (choice) {
+            case '1':
+                displayAllOrders(conn);
+            break;
+            case '2':
+                dailyStatistics(conn);
+            break;
+            case '0':
+                mysql_close(conn);
+            return 0;
+            default:
+                cout << "无效的选择，请重试。\n";
+        }
+    }
+
+    mysql_close(conn);
+    return 0;
+}
+
 // 连接到数据库
 void connectToDatabase(MYSQL *&conn) {
     const char *server = "localhost";
@@ -88,37 +125,4 @@ void dailyStatistics(MYSQL *conn) {
         cout << "当天无已使用桌子。\n";
     }
     mysql_free_result(res);
-}
-
-int main() {
-    MYSQL *conn;
-    connectToDatabase(conn);
-
-    char choice;
-
-    while (true) {
-        cout << "\n==================== 餐厅老板端 ====================\n";
-        cout << "1. 查看所有订单\n";
-        cout << "2. 统计查询\n";
-        cout << "0. 退出\n";
-        cout << "请选择操作: ";
-        cin >> choice;
-
-        switch (choice) {
-            case '1':
-                displayAllOrders(conn);
-                break;
-            case '2':
-                dailyStatistics(conn);
-                break;
-            case '0':
-                mysql_close(conn);
-                return 0;
-            default:
-                cout << "无效的选择，请重试。\n";
-        }
-    }
-
-    mysql_close(conn);
-    return 0;
 }

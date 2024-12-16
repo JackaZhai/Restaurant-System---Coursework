@@ -8,6 +8,62 @@
 
 using namespace std;
 
+void connectToDatabase(MYSQL *&conn);// 连接到数据库
+void displayOrders(MYSQL *conn, int table_id);// 显示订单
+void updateOrderStatus(MYSQL *conn, int order_id, int status);// 更新订单状态
+void addItemsToOrder(MYSQL *conn, int table_id, int dish_id, int quantity);// 添加菜品到订单
+
+int main() {
+    MYSQL *conn;
+    connectToDatabase(conn);
+
+    int table_id, dish_id, quantity, order_id;
+    char choice;
+    int status;
+
+    while (true) {
+        cout << "\n==================== 服务员端 ====================\n";
+        cout << "1. 查看订单\n";
+        cout << "2. 更新订单状态\n";
+        cout << "3. 添加菜品到订单\n";
+        cout << "0. 退出\n";
+        cout << "请选择操作: ";
+        cin >> choice;
+
+        switch (choice) {
+            case '1':
+                cout << "请输入桌号: ";
+            cin >> table_id;
+            displayOrders(conn, table_id);
+            break;
+            case '2':
+                cout << "请输入订单ID: ";
+            cin >> order_id;
+            cout << "请输入新状态 (0-待做/1-已做/2-已出餐): ";
+            cin >> status;
+            updateOrderStatus(conn, order_id, status);
+            break;
+            case '3':
+                cout << "请输入桌号: ";
+            cin >> table_id;
+            cout << "请输入菜品ID: ";
+            cin >> dish_id;
+            cout << "请输入数量: ";
+            cin >> quantity;
+            addItemsToOrder(conn, table_id, dish_id, quantity);
+            break;
+            case '0':
+                mysql_close(conn);
+            return 0;
+            default:
+                cout << "无效的选择，请重试。\n";
+        }
+    }
+
+    mysql_close(conn);
+    return 0;
+}
+
 // 连接到数据库
 void connectToDatabase(MYSQL *&conn) {
     const char *server = "localhost";
@@ -106,53 +162,3 @@ void addItemsToOrder(MYSQL *conn, int table_id, int dish_id, int quantity) {
     }
 }
 
-int main() {
-    MYSQL *conn;
-    connectToDatabase(conn);
-
-    int table_id, dish_id, quantity, order_id;
-    char choice;
-    int status;
-
-    while (true) {
-        cout << "\n==================== 服务员端 ====================\n";
-        cout << "1. 查看订单\n";
-        cout << "2. 更新订单状态\n";
-        cout << "3. 添加菜品到订单\n";
-        cout << "0. 退出\n";
-        cout << "请选择操作: ";
-        cin >> choice;
-
-        switch (choice) {
-            case '1':
-                cout << "请输入桌号: ";
-                cin >> table_id;
-                displayOrders(conn, table_id);
-                break;
-            case '2':
-                cout << "请输入订单ID: ";
-                cin >> order_id;
-                cout << "请输入新状态 (0-待做/1-已做/2-已出餐): ";
-                cin >> status;
-                updateOrderStatus(conn, order_id, status);
-                break;
-            case '3':
-                cout << "请输入桌号: ";
-                cin >> table_id;
-                cout << "请输入菜品ID: ";
-                cin >> dish_id;
-                cout << "请输入数量: ";
-                cin >> quantity;
-                addItemsToOrder(conn, table_id, dish_id, quantity);
-                break;
-            case '0':
-                mysql_close(conn);
-                return 0;
-            default:
-                cout << "无效的选择，请重试。\n";
-        }
-    }
-
-    mysql_close(conn);
-    return 0;
-}

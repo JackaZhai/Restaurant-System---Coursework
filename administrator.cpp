@@ -5,6 +5,99 @@
 
 using namespace std;
 
+void connectToDatabase(MYSQL *&conn);// 连接到数据库
+void initializeTables(MYSQL *conn);// 初始化表
+void addDish(MYSQL *conn, const string &name, double price);// 添加菜品
+void deleteDish(MYSQL *conn, const string &name);// 删除菜品
+void addDrink(MYSQL *conn, const string &name, double price);// 添加酒水
+void deleteDrink(MYSQL *conn, const string &name);// 删除酒水
+void addTable(MYSQL *conn, int table_id, int capacity);// 添加餐位
+void deleteTable(MYSQL *conn, int table_id);// 删除餐位
+
+int main() {
+    MYSQL *conn;
+    connectToDatabase(conn);
+
+    char choice;
+    while (true) {
+        cout << "\n==================== 系统管理员端 ====================\n";
+        cout << "1. 系统初始化\n";
+        cout << "2. 添加菜品\n";
+        cout << "3. 删除菜品\n";
+        cout << "4. 添加酒水\n";
+        cout << "5. 删除酒水\n";
+        cout << "6. 添加餐位\n";
+        cout << "7. 删除餐位\n";
+        cout << "0. 退出\n";
+        cout << "请选择操作: ";
+        cin >> choice;
+
+        switch (choice) {
+            case '1':
+                initializeTables(conn);
+                break;
+            case '2': {
+                string name;
+                double price;
+                cout << "请输入菜品名称: ";
+                cin >> name;
+                cout << "请输入菜品价格: ";
+                cin >> price;
+                addDish(conn, name, price);
+                break;
+            }
+            case '3': {
+                string name;
+                cout << "请输入要删除的菜品名称: ";
+                cin >> name;
+                deleteDish(conn, name);
+                break;
+            }
+            case '4': {
+                string name;
+                double price;
+                cout << "请输入酒水名称: ";
+                cin >> name;
+                cout << "请输入酒水价格: ";
+                cin >> price;
+                addDrink(conn, name, price);
+                break;
+            }
+            case '5': {
+                string name;
+                cout << "请输入要删除的酒水名称: ";
+                cin >> name;
+                deleteDrink(conn, name);
+                break;
+            }
+            case '6': {
+                int table_id, capacity;
+                cout << "请输入餐位ID: ";
+                cin >> table_id;
+                cout << "请输入餐位容量: ";
+                cin >> capacity;
+                addTable(conn, table_id, capacity);
+                break;
+            }
+            case '7': {
+                int table_id;
+                cout << "请输入要删除的餐位ID: ";
+                cin >> table_id;
+                deleteTable(conn, table_id);
+                break;
+            }
+            case '0':
+                mysql_close(conn);
+                return 0;
+            default:
+                cout << "无效的选择，请重试。\n";
+        }
+    }
+
+    mysql_close(conn);
+    return 0;
+}
+
 void connectToDatabase(MYSQL *&conn) {
     const char *server = "localhost";
     const char *user = "root";
@@ -95,88 +188,4 @@ void deleteTable(MYSQL *conn, int table_id) {
     } else {
         cout << "餐位删除成功.\n";
     }
-}
-
-int main() {
-    MYSQL *conn;
-    connectToDatabase(conn);
-
-    char choice;
-    while (true) {
-        cout << "\n==================== 系统管理员端 ====================\n";
-        cout << "1. 初始化表\n";
-        cout << "2. 添加菜品\n";
-        cout << "3. 删除菜品\n";
-        cout << "4. 添加酒水\n";
-        cout << "5. 删除酒水\n";
-        cout << "6. 添加餐位\n";
-        cout << "7. 删除餐位\n";
-        cout << "0. 退出\n";
-        cout << "请选择操作: ";
-        cin >> choice;
-
-        switch (choice) {
-            case '1':
-                initializeTables(conn);
-                break;
-            case '2': {
-                string name;
-                double price;
-                cout << "请输入菜品名称: ";
-                cin >> name;
-                cout << "请输入菜品价格: ";
-                cin >> price;
-                addDish(conn, name, price);
-                break;
-            }
-            case '3': {
-                string name;
-                cout << "请输入要删除的菜品名称: ";
-                cin >> name;
-                deleteDish(conn, name);
-                break;
-            }
-            case '4': {
-                string name;
-                double price;
-                cout << "请输入酒水名称: ";
-                cin >> name;
-                cout << "请输入酒水价格: ";
-                cin >> price;
-                addDrink(conn, name, price);
-                break;
-            }
-            case '5': {
-                string name;
-                cout << "请输入要删除的酒水名称: ";
-                cin >> name;
-                deleteDrink(conn, name);
-                break;
-            }
-            case '6': {
-                int table_id, capacity;
-                cout << "请输入餐位ID: ";
-                cin >> table_id;
-                cout << "请输入餐位容量: ";
-                cin >> capacity;
-                addTable(conn, table_id, capacity);
-                break;
-            }
-            case '7': {
-                int table_id;
-                cout << "请输入要删除的餐位ID: ";
-                cin >> table_id;
-                deleteTable(conn, table_id);
-                break;
-            }
-            case '0':
-                mysql_close(conn);
-                return 0;
-            default:
-                cout << "无效的选择，请重试。\n";
-        }
-    }
-
-    mysql_close(conn);
-    return 0;
 }

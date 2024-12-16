@@ -8,6 +8,78 @@
 
 using namespace std;
 
+void connectToDatabase(MYSQL *&conn);// 连接到数据库
+char getch();// 获取用户输入
+void displayWelcomeScreen();// 显示欢迎界面
+void displayCategories(MYSQL *conn, map<int, string> &categories);// 显示菜品种类
+void displayMenu(MYSQL *conn, const string &category);// 显示菜单
+void displayAvailableTables(MYSQL *conn);// 显示可用桌号
+void placeOrder(MYSQL *conn, int table_id, int dish_id, int quantity);// 下订单
+void updateTableStatus(MYSQL *conn, int table_id, int status);// 更新桌号状态
+void displayOrderSummary(MYSQL *conn, int table_id);// 显示订单摘要
+
+
+int main() {
+    MYSQL *conn;
+    connectToDatabase(conn);
+
+    int table_id, dish_id, quantity;
+    char choice;
+    map<int, string> categories;
+
+    while (true) {
+        displayWelcomeScreen();
+
+        displayAvailableTables(conn);
+        cout << "\n请输入桌号: ";
+        cin >> table_id;
+        updateTableStatus(conn, table_id, 1); // 更新桌号状态为已占用
+
+        do {
+            displayCategories(conn, categories);
+
+            int category_choice;
+            cout << "\n请选择菜品种类 (按 0 退出): ";
+            cin >> category_choice;
+
+            if (category_choice == 0) {
+                break;
+            }
+
+            if (categories.find(category_choice) != categories.end()) {
+                displayMenu(conn, categories[category_choice]);
+
+                cout << "请输入菜品 ID 进行点单: ";
+                cin >> dish_id;
+                cout << "请输入数量: ";
+                cin >> quantity;
+
+                placeOrder(conn, table_id, dish_id, quantity);
+
+                cout << "是否继续选择菜品? (y/n): ";
+                cin >> choice;
+                if (choice == 'n' || choice == 'N') {
+                    break;
+                }
+            } else {
+                cout << "无效的选择，请重试。\n";
+            }
+        } while (true);
+
+        displayOrderSummary(conn, table_id); // 显示订单摘要
+
+        cout << "是否继续下单? (y/n): ";
+        cin >> choice;
+
+        if (choice == 'n' || choice == 'N') {
+            break;
+        }
+    }
+
+    mysql_close(conn);
+    return 0;
+}
+
 // 连接到数据库
 void connectToDatabase(MYSQL *&conn) {
     const char *server = "localhost";
@@ -186,65 +258,4 @@ void displayOrderSummary(MYSQL *conn, int table_id) {
     cout << "=============================================\n";
 
     mysql_free_result(res);
-}
-
-int main() {
-    MYSQL *conn;
-    connectToDatabase(conn);
-
-    int table_id, dish_id, quantity;
-    char choice;
-    map<int, string> categories;
-
-    while (true) {
-        displayWelcomeScreen();
-
-        displayAvailableTables(conn);
-        cout << "\n请输入桌号: ";
-        cin >> table_id;
-        updateTableStatus(conn, table_id, 1); // 更新桌号状态为已占用
-
-        do {
-            displayCategories(conn, categories);
-
-            int category_choice;
-            cout << "\n请选择菜品种类 (按 0 退出): ";
-            cin >> category_choice;
-
-            if (category_choice == 0) {
-                break;
-            }
-
-            if (categories.find(category_choice) != categories.end()) {
-                displayMenu(conn, categories[category_choice]);
-
-                cout << "请输入菜品 ID 进行点单: ";
-                cin >> dish_id;
-                cout << "请输入数量: ";
-                cin >> quantity;
-
-                placeOrder(conn, table_id, dish_id, quantity);
-
-                cout << "是否继续选择菜品? (y/n): ";
-                cin >> choice;
-                if (choice == 'n' || choice == 'N') {
-                    break;
-                }
-            } else {
-                cout << "无效的选择，请重试。\n";
-            }
-        } while (true);
-
-        displayOrderSummary(conn, table_id); // 显示订单摘要
-
-        cout << "是否继续下单? (y/n): ";
-        cin >> choice;
-
-        if (choice == 'n' || choice == 'N') {
-            break;
-        }
-    }
-
-    mysql_close(conn);
-    return 0;
 }
