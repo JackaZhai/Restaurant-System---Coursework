@@ -1,0 +1,6 @@
+/Users/Zhai/CLionProjects/点餐系统/cmake-build-debug/CMakeFiles/costomer.dir
+/Users/Zhai/CLionProjects/点餐系统/cmake-build-debug/CMakeFiles/waiter.dir
+/Users/Zhai/CLionProjects/点餐系统/cmake-build-debug/CMakeFiles/administrator.dir
+/Users/Zhai/CLionProjects/点餐系统/cmake-build-debug/CMakeFiles/cooker.dir
+/Users/Zhai/CLionProjects/点餐系统/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/Zhai/CLionProjects/点餐系统/cmake-build-debug/CMakeFiles/rebuild_cache.dir
