@@ -121,6 +121,14 @@ void initializeTables(MYSQL *conn) {
         cout << "orders 表内容已删除.\n";
     }
 
+    // 重置 orders 表的自增值
+    if (mysql_query(conn, "ALTER TABLE orders AUTO_INCREMENT = 0")) {
+        cerr << "重置 orders 表自增值失败: " << mysql_error(conn) << endl;
+        return;
+    } else {
+        cout << "orders 表自增值已重置为 0.\n";
+    }
+
     // 将 tables 表的状态设置为 0
     if (mysql_query(conn, "UPDATE tables SET status = 0")) {
         cerr << "更新 tables 表状态失败: " << mysql_error(conn) << endl;

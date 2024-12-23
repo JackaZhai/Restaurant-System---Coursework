@@ -29,7 +29,6 @@ int main() {
 
     while (true) {
         displayWelcomeScreen();
-
         displayAvailableTables(conn);
         cout << "\n请输入桌号: ";
         cin >> table_id;
@@ -236,25 +235,66 @@ void updateTableStatus(MYSQL *conn, int table_id, int status) {
 
 // 计算并显示订单摘要
 void displayOrderSummary(MYSQL *conn, int table_id) {
-    string query = "SELECT dish_name, price, SUM(quantity), SUM(total_price) FROM orders WHERE table_id = " + to_string(table_id) + " GROUP BY dish_name, price";
+    // Retrieve order ID, creation time, and status
+    string query = "SELECT order_id, creation_time, status FROM orders WHERE table_id = " + to_string(table_id) + " LIMIT 1";
     if (mysql_query(conn, query.c_str())) {
         cerr << "MySQL 查询失败: " << mysql_error(conn) << endl;
         return;
     }
 
     MYSQL_RES *res = mysql_store_result(conn);
-    MYSQL_ROW row;
+    MYSQL_ROW row = mysql_fetch_row(res);
 
-    cout << "\n==================== 订单摘要 ====================\n";
-    cout << left << setw(20) << "菜品名称" << setw(10) << "单价" << setw(10) << "数量" << setw(10) << "总价" << endl;
-    cout << "-------------------------------------------------\n";
+    if (!row) {
+        cerr << "未找到订单信息。\n";
+        mysql_free_result(res);
+        return;
+    }
+
+    string order_id = row[0] ? row[0] : "NULL";
+    string creation_time = row[1] ? row[1] : "NULL";
+    string status;
+    if (row[2]) {
+        int statusInt = stoi(row[2]);
+        switch (statusInt) {
+            case 0: status = "待做"; break;
+            case 1: status = "已做"; break;
+            case 2: status = "已出餐"; break;
+            default: status = "未知"; break;
+        }
+    } else {
+        status = "NULL";
+    }
+
+    mysql_free_result(res);
+
+    // Retrieve detailed order summary
+    query = "SELECT dish_name, price, SUM(quantity), SUM(total_price) FROM orders WHERE table_id = " + to_string(table_id) + " GROUP BY dish_name, price";
+    if (mysql_query(conn, query.c_str())) {
+        cerr << "MySQL 查询失败: " << mysql_error(conn) << endl;
+        return;
+    }
+
+    res = mysql_store_result(conn);
+
+    cout << "\n点餐成功！\n";
+    cout << "您的订单信息为：\n";
+    cout << "订单编号：" << order_id << "\n";
+    cout << "订单创建时间：" << creation_time << "\n";
+    cout << "当前订单总价：";
     double total_cost = 0;
     while ((row = mysql_fetch_row(res))) {
-        cout << left << setw(20) << (row[0] ? row[0] : "NULL") << setw(10) << (row[1] ? row[1] : "NULL") << setw(10) << (row[2] ? row[2] : "NULL") << setw(10) << (row[3] ? row[3] : "NULL") << endl;
         total_cost += row[3] ? stod(row[3]) : 0;
     }
+    cout << total_cost << " 元\n";
+    cout << "订单状态：" << status << "\n";
+    cout << "详细订单为：\n";
+    cout << left << setw(20) << "菜品名称" << setw(10) << "单价" << setw(10) << "数量" << setw(10) << "总价" << endl;
     cout << "-------------------------------------------------\n";
-    cout << "总花费: " << total_cost << " 元\n";
+    mysql_data_seek(res, 0); // Reset result pointer to fetch rows again
+    while ((row = mysql_fetch_row(res))) {
+        cout << left << setw(20) << (row[0] ? row[0] : "NULL") << setw(10) << (row[1] ? row[1] : "NULL") << setw(10) << (row[2] ? row[2] : "NULL") << setw(10) << (row[3] ? row[3] : "NULL") << endl;
+    }
     cout << "=============================================\n";
 
     mysql_free_result(res);
