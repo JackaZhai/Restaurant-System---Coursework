@@ -1,27 +1,31 @@
-#include <mysql/mysql.h>
+// src/customer.cpp
+#include <mysql.h>
 #include <iostream>
 #include <iomanip>
 #include <string>
 #include <map>
+#ifdef _WIN32
+#include <conio.h>
+#else
 #include <termios.h>
 #include <unistd.h>
+#endif
 
 using namespace std;
 
-void connectToDatabase(MYSQL *&conn);// è¿æ¥åˆ°æ•°æ®åº“
-char getch();// è·å–ç”¨æˆ·è¾“å…¥
-void displayWelcomeScreen();// æ˜¾ç¤ºæ¬¢è¿ç•Œé¢
-void displayCategories(MYSQL *conn, map<int, string> &categories);// æ˜¾ç¤ºèœå“ç§ç±»
-void displayMenu(MYSQL *conn, const string &category);// æ˜¾ç¤ºèœå•
-void displayAvailableTables(MYSQL *conn);// æ˜¾ç¤ºå¯ç”¨æ¡Œå·
-void placeOrder(MYSQL *conn, int table_id, int dish_id, int quantity);// ä¸‹è®¢å•
-void updateTableStatus(MYSQL *conn, int table_id, int status);// æ›´æ–°æ¡Œå·çŠ¶æ€
-void displayOrderSummary(MYSQL *conn, int table_id);// æ˜¾ç¤ºè®¢å•æ‘˜è¦
+void connectToDatabase_customer(MYSQL *&conn); // Á¬½Óµ½Êı¾İ¿â
+int getch(); // »ñÈ¡ÓÃ»§ÊäÈë
+void displayWelcomeScreen(); // ÏÔÊ¾»¶Ó­½çÃæ
+void displayCategories(MYSQL *conn, map<int, string> &categories); // ÏÔÊ¾²ËÆ·ÖÖÀà
+void displayMenu(MYSQL *conn, const string &category); // ÏÔÊ¾²Ëµ¥
+void displayAvailableTables(MYSQL *conn); // ÏÔÊ¾¿ÉÓÃ×ÀºÅ
+void placeOrder(MYSQL *conn, int table_id, int dish_id, int quantity); // ÏÂ¶©µ¥
+void updateTableStatus(MYSQL *conn, int table_id, int status); // ¸üĞÂ×ÀºÅ×´Ì¬
+void displayOrderSummary(MYSQL *conn, int table_id); // ÏÔÊ¾¶©µ¥ÕªÒª
 
-
-int main() {
+void run_customer() {
     MYSQL *conn;
-    connectToDatabase(conn);
+    connectToDatabase_customer(conn);
 
     int table_id, dish_id, quantity;
     char choice;
@@ -30,15 +34,15 @@ int main() {
     while (true) {
         displayWelcomeScreen();
         displayAvailableTables(conn);
-        cout << "\nè¯·è¾“å…¥æ¡Œå·: ";
+        cout << "\nÇëÊäÈë×ÀºÅ: ";
         cin >> table_id;
-        updateTableStatus(conn, table_id, 1); // æ›´æ–°æ¡Œå·çŠ¶æ€ä¸ºå·²å ç”¨
+        updateTableStatus(conn, table_id, 1); // ¸üĞÂ×ÀºÅ×´Ì¬ÎªÒÑÕ¼ÓÃ
 
         do {
             displayCategories(conn, categories);
 
             int category_choice;
-            cout << "\nè¯·é€‰æ‹©èœå“ç§ç±» (æŒ‰ 0 é€€å‡º): ";
+            cout << "\nÇëÑ¡Ôñ²ËÆ·ÖÖÀà (°´ 0 ÍË³ö): ";
             cin >> category_choice;
 
             if (category_choice == 0) {
@@ -48,26 +52,26 @@ int main() {
             if (categories.find(category_choice) != categories.end()) {
                 displayMenu(conn, categories[category_choice]);
 
-                cout << "è¯·è¾“å…¥èœå“ ID è¿›è¡Œç‚¹å•: ";
+                cout << "ÇëÊäÈë²ËÆ· ID ½øĞĞµãµ¥: ";
                 cin >> dish_id;
-                cout << "è¯·è¾“å…¥æ•°é‡: ";
+                cout << "ÇëÊäÈëÊıÁ¿: ";
                 cin >> quantity;
 
                 placeOrder(conn, table_id, dish_id, quantity);
 
-                cout << "æ˜¯å¦ç»§ç»­é€‰æ‹©èœå“? (y/n): ";
+                cout << "ÊÇ·ñ¼ÌĞøÑ¡Ôñ²ËÆ·? (y/n): ";
                 cin >> choice;
                 if (choice == 'n' || choice == 'N') {
                     break;
                 }
             } else {
-                cout << "æ— æ•ˆçš„é€‰æ‹©ï¼Œè¯·é‡è¯•ã€‚\n";
+                cout << "ÎŞĞ§µÄÑ¡Ôñ£¬ÇëÖØÊÔ¡£\n";
             }
         } while (true);
 
-        displayOrderSummary(conn, table_id); // æ˜¾ç¤ºè®¢å•æ‘˜è¦
+        displayOrderSummary(conn, table_id); // ÏÔÊ¾¶©µ¥ÕªÒª
 
-        cout << "æ˜¯å¦ç»§ç»­ä¸‹å•? (y/n): ";
+        cout << "ÊÇ·ñ¼ÌĞøÏÂµ¥? (y/n): ";
         cin >> choice;
 
         if (choice == 'n' || choice == 'N') {
@@ -76,24 +80,26 @@ int main() {
     }
 
     mysql_close(conn);
-    return 0;
 }
 
-// è¿æ¥åˆ°æ•°æ®åº“
-void connectToDatabase(MYSQL *&conn) {
+// Á¬½Óµ½Êı¾İ¿â
+void connectToDatabase_customer(MYSQL *&conn) {
     const char *server = "localhost";
     const char *user = "root";
-    const char *password = "123456789"; // MySQL å¯†ç 
+    const char *password = "123456789"; // MySQL ÃÜÂë
     const char *database = "restaurant"; // Corrected database name
     conn = mysql_init(NULL);
 
     if (!mysql_real_connect(conn, server, user, password, database, 0, NULL, 0)) {
-        cerr << "MySQL è¿æ¥å¤±è´¥: " << mysql_error(conn) << endl;
+        cerr << "MySQL Á¬½ÓÊ§°Ü: " << mysql_error(conn) << endl;
         exit(1);
     }
 }
 
-char getch() {
+int getch() {
+#ifdef _WIN32
+    return _getch();
+#else
     char buf = 0;
     struct termios old = {0};
     if (tcgetattr(0, &old) < 0)
@@ -111,19 +117,20 @@ char getch() {
     if (tcsetattr(0, TCSADRAIN, &old) < 0)
         perror("tcsetattr ~ICANON");
     return buf;
+#endif
 }
 
-// æ˜¾ç¤ºæ¬¢è¿ç•Œé¢
+// ÏÔÊ¾»¶Ó­½çÃæ
 void displayWelcomeScreen() {
-    cout << "æ¬¢è¿å…‰ä¸´ï¼" << endl;
-    cout << "æŒ‰ä»»æ„é”®è¿›å…¥èœå•..." << endl;
-    getch(); // ç­‰å¾…ç”¨æˆ·æŒ‰ä»»æ„é”®
+    cout << "»¶Ó­¹âÁÙ£¡" << endl;
+    cout << "°´ÈÎÒâ¼ü½øÈë²Ëµ¥..." << endl;
+    getch(); // µÈ´ıÓÃ»§°´ÈÎÒâ¼ü
 }
 
-// æ˜¾ç¤ºèœå“ç§ç±»
+// ÏÔÊ¾²ËÆ·ÖÖÀà
 void displayCategories(MYSQL *conn, map<int, string> &categories) {
     if (mysql_query(conn, "SELECT DISTINCT category FROM dishes")) {
-        cerr << "MySQL æŸ¥è¯¢å¤±è´¥: " << mysql_error(conn) << endl;
+        cerr << "MySQL ²éÑ¯Ê§°Ü: " << mysql_error(conn) << endl;
         return;
     }
 
@@ -131,55 +138,55 @@ void displayCategories(MYSQL *conn, map<int, string> &categories) {
     MYSQL_ROW row;
     int index = 1;
 
-    cout << "\n==================== èœå“ç§ç±» ====================\n";
+    cout << "\n==================== ²ËÆ·ÖÖÀà ====================\n";
     while ((row = mysql_fetch_row(res))) {
         cout << index << ". " << (row[0] ? row[0] : "NULL") << endl;
         categories[index] = row[0];
         index++;
     }
-    cout << "0. é€€å‡º\n";
+    cout << "0. ÍË³ö\n";
     cout << "=============================================\n";
 
     mysql_free_result(res);
 }
 
-// æ˜¾ç¤ºèœå•
+// ÏÔÊ¾²Ëµ¥
 void displayMenu(MYSQL *conn, const string &category) {
     string query = "SELECT id, name, category, price FROM dishes WHERE category = '" + category + "'";
     if (mysql_query(conn, query.c_str())) {
-        cerr << "MySQL æŸ¥è¯¢å¤±è´¥: " << mysql_error(conn) << endl;
+        cerr << "MySQL ²éÑ¯Ê§°Ü: " << mysql_error(conn) << endl;
         return;
     }
 
     MYSQL_RES *res = mysql_store_result(conn);
     MYSQL_ROW row;
 
-    cout << "\n=========================== èœå• ===========================\n";
-    cout << "ID\tåç§°\t\t\tç§ç±»\t\tä»·æ ¼" << endl;
+    cout << "\n=========================== ²Ëµ¥ ===========================\n";
+    cout << "ID\tÃû³Æ\t\t\tÖÖÀà\t\t¼Û¸ñ" << endl;
     cout << "-------------------------------------------------------------\n";
     while ((row = mysql_fetch_row(res))) {
         cout << (row[0] ? row[0] : "NULL") << "\t"
-             << (row[1] ? row[1] : "NULL") << "\t\t"
-             << (row[2] ? row[2] : "NULL") << "\t\t"
-             << (row[3] ? row[3] : "NULL") << endl;
+                << (row[1] ? row[1] : "NULL") << "\t\t"
+                << (row[2] ? row[2] : "NULL") << "\t\t"
+                << (row[3] ? row[3] : "NULL") << endl;
     }
     cout << "=============================================\n";
 
     mysql_free_result(res);
 }
 
-// æ˜¾ç¤ºå¯ç”¨æ¡Œå·
+// ÏÔÊ¾¿ÉÓÃ×ÀºÅ
 void displayAvailableTables(MYSQL *conn) {
     if (mysql_query(conn, "SELECT table_id, seats FROM tables WHERE status = 0")) {
-        cerr << "MySQL æŸ¥è¯¢å¤±è´¥: " << mysql_error(conn) << endl;
+        cerr << "MySQL ²éÑ¯Ê§°Ü: " << mysql_error(conn) << endl;
         return;
     }
 
     MYSQL_RES *res = mysql_store_result(conn);
     MYSQL_ROW row;
 
-    cout << "\n==================== å¯ç”¨æ¡Œå· ====================\n";
-    cout << left << setw(10) << "æ¡Œå·" << setw(10) << "åº§ä½æ•°" << endl;
+    cout << "\n==================== ¿ÉÓÃ×ÀºÅ ====================\n";
+    cout << left << setw(10) << "×ÀºÅ" << setw(10) << "×ùÎ»Êı" << endl;
     cout << "---------------------------------------------\n";
     while ((row = mysql_fetch_row(res))) {
         cout << left << setw(10) << (row[0] ? row[0] : "NULL") << setw(10) << (row[1] ? row[1] : "NULL") << endl;
@@ -189,19 +196,19 @@ void displayAvailableTables(MYSQL *conn) {
     mysql_free_result(res);
 }
 
-// ä¸‹è®¢å•
+// ÏÂ¶©µ¥
 void placeOrder(MYSQL *conn, int table_id, int dish_id, int quantity) {
-    // è·å–èœå“ä¿¡æ¯
+    // »ñÈ¡²ËÆ·ĞÅÏ¢
     string query = "SELECT name, price FROM dishes WHERE id = " + to_string(dish_id);
     if (mysql_query(conn, query.c_str())) {
-        cerr << "MySQL æŸ¥è¯¢å¤±è´¥: " << mysql_error(conn) << endl;
+        cerr << "MySQL ²éÑ¯Ê§°Ü: " << mysql_error(conn) << endl;
         return;
     }
 
     MYSQL_RES *res = mysql_store_result(conn);
     MYSQL_ROW row = mysql_fetch_row(res);
     if (!row) {
-        cerr << "æœªæ‰¾åˆ°èœå“ ID: " << dish_id << endl;
+        cerr << "Î´ÕÒµ½²ËÆ· ID: " << dish_id << endl;
         mysql_free_result(res);
         return;
     }
@@ -212,33 +219,35 @@ void placeOrder(MYSQL *conn, int table_id, int dish_id, int quantity) {
 
     mysql_free_result(res);
 
-    // æ’å…¥è®¢å•
+    // ²åÈë¶©µ¥
     query = "INSERT INTO orders (table_id, dish_id, dish_name, price, quantity, total_price, status) VALUES (" +
             to_string(table_id) + ", " + to_string(dish_id) + ", '" + dish_name + "', " + to_string(price) + ", " +
-            to_string(quantity) + ", " + to_string(total_price) + ", '0') ON DUPLICATE KEY UPDATE quantity = quantity + " +
+            to_string(quantity) + ", " + to_string(total_price) +
+            ", '0') ON DUPLICATE KEY UPDATE quantity = quantity + " +
             to_string(quantity) + ", total_price = total_price + " + to_string(total_price);
 
     if (mysql_query(conn, query.c_str())) {
-        cerr << "MySQL æŸ¥è¯¢å¤±è´¥: " << mysql_error(conn) << endl;
+        cerr << "MySQL ²éÑ¯Ê§°Ü: " << mysql_error(conn) << endl;
     } else {
-        cout << "è®¢å•æˆåŠŸ.\n";
+        cout << "¶©µ¥³É¹¦.\n";
     }
 }
 
-// æ›´æ–°æ¡Œå·çŠ¶æ€
+// ¸üĞÂ×ÀºÅ×´Ì¬
 void updateTableStatus(MYSQL *conn, int table_id, int status) {
     string query = "UPDATE tables SET status = " + to_string(status) + " WHERE table_id = " + to_string(table_id);
     if (mysql_query(conn, query.c_str())) {
-        cerr << "MySQL æŸ¥è¯¢å¤±è´¥: " << mysql_error(conn) << endl;
+        cerr << "MySQL ²éÑ¯Ê§°Ü: " << mysql_error(conn) << endl;
     }
 }
 
-// è®¡ç®—å¹¶æ˜¾ç¤ºè®¢å•æ‘˜è¦
+// ¼ÆËã²¢ÏÔÊ¾¶©µ¥ÕªÒª
 void displayOrderSummary(MYSQL *conn, int table_id) {
     // Retrieve order ID, creation time, and status
-    string query = "SELECT order_id, creation_time, status FROM orders WHERE table_id = " + to_string(table_id) + " LIMIT 1";
+    string query = "SELECT order_id, creation_time, status FROM orders WHERE table_id = " + to_string(table_id) +
+                   " LIMIT 1";
     if (mysql_query(conn, query.c_str())) {
-        cerr << "MySQL æŸ¥è¯¢å¤±è´¥: " << mysql_error(conn) << endl;
+        cerr << "MySQL ²éÑ¯Ê§°Ü: " << mysql_error(conn) << endl;
         return;
     }
 
@@ -246,7 +255,7 @@ void displayOrderSummary(MYSQL *conn, int table_id) {
     MYSQL_ROW row = mysql_fetch_row(res);
 
     if (!row) {
-        cerr << "æœªæ‰¾åˆ°è®¢å•ä¿¡æ¯ã€‚\n";
+        cerr << "Î´ÕÒµ½¶©µ¥ĞÅÏ¢¡£\n";
         mysql_free_result(res);
         return;
     }
@@ -257,10 +266,14 @@ void displayOrderSummary(MYSQL *conn, int table_id) {
     if (row[2]) {
         int statusInt = stoi(row[2]);
         switch (statusInt) {
-            case 0: status = "å¾…åš"; break;
-            case 1: status = "å·²åš"; break;
-            case 2: status = "å·²å‡ºé¤"; break;
-            default: status = "æœªçŸ¥"; break;
+            case 0: status = "´ı×ö";
+                break;
+            case 1: status = "ÒÑ×ö";
+                break;
+            case 2: status = "ÒÑ³ö²Í";
+                break;
+            default: status = "Î´Öª";
+                break;
         }
     } else {
         status = "NULL";
@@ -269,31 +282,33 @@ void displayOrderSummary(MYSQL *conn, int table_id) {
     mysql_free_result(res);
 
     // Retrieve detailed order summary
-    query = "SELECT dish_name, price, SUM(quantity), SUM(total_price) FROM orders WHERE table_id = " + to_string(table_id) + " GROUP BY dish_name, price";
+    query = "SELECT dish_name, price, SUM(quantity), SUM(total_price) FROM orders WHERE table_id = " +
+            to_string(table_id) + " GROUP BY dish_name, price";
     if (mysql_query(conn, query.c_str())) {
-        cerr << "MySQL æŸ¥è¯¢å¤±è´¥: " << mysql_error(conn) << endl;
+        cerr << "MySQL ²éÑ¯Ê§°Ü: " << mysql_error(conn) << endl;
         return;
     }
 
     res = mysql_store_result(conn);
 
-    cout << "\nç‚¹é¤æˆåŠŸï¼\n";
-    cout << "æ‚¨çš„è®¢å•ä¿¡æ¯ä¸ºï¼š\n";
-    cout << "è®¢å•ç¼–å·ï¼š" << order_id << "\n";
-    cout << "è®¢å•åˆ›å»ºæ—¶é—´ï¼š" << creation_time << "\n";
-    cout << "å½“å‰è®¢å•æ€»ä»·ï¼š";
+    cout << "\nµã²Í³É¹¦£¡\n";
+    cout << "ÄúµÄ¶©µ¥ĞÅÏ¢Îª£º\n";
+    cout << "¶©µ¥±àºÅ£º" << order_id << "\n";
+    cout << "¶©µ¥´´½¨Ê±¼ä£º" << creation_time << "\n";
+    cout << "µ±Ç°¶©µ¥×Ü¼Û£º";
     double total_cost = 0;
     while ((row = mysql_fetch_row(res))) {
         total_cost += row[3] ? stod(row[3]) : 0;
     }
-    cout << total_cost << " å…ƒ\n";
-    cout << "è®¢å•çŠ¶æ€ï¼š" << status << "\n";
-    cout << "è¯¦ç»†è®¢å•ä¸ºï¼š\n";
-    cout << left << setw(20) << "èœå“åç§°" << setw(10) << "å•ä»·" << setw(10) << "æ•°é‡" << setw(10) << "æ€»ä»·" << endl;
+    cout << total_cost << " Ôª\n";
+    cout << "¶©µ¥×´Ì¬£º" << status << "\n";
+    cout << "ÏêÏ¸¶©µ¥Îª£º\n";
+    cout << left << setw(20) << "²ËÆ·Ãû³Æ" << setw(10) << "µ¥¼Û" << setw(10) << "ÊıÁ¿" << setw(10) << "×Ü¼Û" << endl;
     cout << "-------------------------------------------------\n";
     mysql_data_seek(res, 0); // Reset result pointer to fetch rows again
     while ((row = mysql_fetch_row(res))) {
-        cout << left << setw(20) << (row[0] ? row[0] : "NULL") << setw(10) << (row[1] ? row[1] : "NULL") << setw(10) << (row[2] ? row[2] : "NULL") << setw(10) << (row[3] ? row[3] : "NULL") << endl;
+        cout << left << setw(20) << (row[0] ? row[0] : "NULL") << setw(10) << (row[1] ? row[1] : "NULL") << setw(10) <<
+                (row[2] ? row[2] : "NULL") << setw(10) << (row[3] ? row[3] : "NULL") << endl;
     }
     cout << "=============================================\n";
 

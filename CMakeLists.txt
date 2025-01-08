@@ -1,26 +1,17 @@
 cmake_minimum_required(VERSION 3.10)
 project(restaurant)
 
-set(CMAKE_CXX_STANDARD 17)# 设置 C++ 标准
+set(CMAKE_CXX_STANDARD 17) # 设置 C++ 标准
 
-# 添加 include 目录
-include_directories(/opt/homebrew/include)
+# 添加 include_MySQL 目录
+include_directories(C:/Users/JackZhai/CLionProjects/Restaurant-System-Coursework/include/include_MySQL)
+include_directories(C:/Users/JackZhai/CLionProjects/Restaurant-System-Coursework/include)
 
 # 添加库目录
-link_directories(/opt/homebrew/lib)
+link_directories(C:/Users/JackZhai/CLionProjects/Restaurant-System-Coursework/lib)
 
 # 添加源文件
-add_executable(costomer costomer.cpp)
-add_executable(waiter waiter.cpp)
-add_executable(administrator administrator.cpp)
-add_executable(cooker cooker.cpp)
-add_executable(cashier cashier.cpp)
-add_executable(boss boss.cpp)
+add_executable(main src/main.cpp src/customer.cpp src/waiter.cpp src/administrator.cpp src/cooker.cpp src/cashier.cpp src/boss.cpp)
 
 # 链接 MySQL 库
-target_link_libraries(costomer mysqlclient)
-target_link_libraries(waiter mysqlclient)
-target_link_libraries(administrator mysqlclient)
-target_link_libraries(cooker mysqlclient)
-target_link_libraries(boss mysqlclient)
-target_link_libraries(cashier mysqlclient)
+target_link_libraries(main libmysql)
