@@ -97,13 +97,19 @@ void settleBill(MYSQL *conn, int table_id) {
         double item_total_price = row[3] ? stod(row[3]) : 0;
         total_price += item_total_price;
 
-        cout << left << setw(20) << dish_name << setw(10) << price << setw(10) << quantity << setw(10) <<
-                item_total_price << endl;
+        cout << left << setw(20) << dish_name << setw(10) << price << setw(10) << quantity << setw(10) << item_total_price << endl;
     }
     cout << "-------------------------------------------------\n";
+
     if (total_price < 500) {
-        total_price += 0; // 收取餐位费
+        int num_people;
+        cout << "消费金额不足500元，请输入用餐人数: ";
+        cin >> num_people;
+        double table_fee = num_people * 5;
+        total_price += table_fee;
+        cout << "收取餐位费: " << table_fee << " 元\n";
     }
+
     cout << "订单总金额: " << total_price << " 元\n";
     cout << "===============================================\n";
 
